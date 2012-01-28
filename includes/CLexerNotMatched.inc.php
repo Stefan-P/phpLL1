@@ -1,0 +1,9 @@
+<?
+
+
+class CELexerNotMatched extends Exception {
+	
+	
+}
+
+?>

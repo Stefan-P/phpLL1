@@ -1,0 +1,72 @@
+@@rules
+
+program::LHS =
+	 <? $LHS = new AST('TOP','' ) ; ?> 
+	 { ( ( @nonPHP::HTML )
+	   | ( ( '<?' | '<?php' ) phpCode::I ( '?>' | 'php?>' )  <? $LHS->appendChildNode( $I ) ; ?>  
+	     ) 
+	   )
+	 } 
+	;
+
+phpCode::LHS = 
+	statements::A 				<? $LHS = $A; ?> 
+	;
+
+statements::LHS = 
+    <? $LHS = new AST('sequ'); ?>
+	{  simpleStatement::S <? $LHS->appendChildNode( $S ) ; ?>  } 
+	<? $LHS = $LHS->getSelfOrUniqueSon(); ?>
+	;
+
+simpleStatement::LHS =
+	(  functionDecl::F  		<? $LHS = $F; ?>
+	| classDecl 				<? $LHS = new AST('class','' ); ?>
+	| assignment::A ';' 		<? $LHS = $A; ?>
+	| 'noop' ';' 				<? $LHS = new AST('noop','' ); ?>
+	)  ;
+
+functionDecl::LHS = 
+	'function' @ident::FName '(' [ parameterList ] ')' block::BCode  
+		<? $LHS = new AST('fun', $FName, $BCode ); ?> 
+	;
+
+block::LHS =
+	'{' statements::S <? $LHS = $S; ?>  '}' ;
+
+classDecl = 
+	'class' @ident '{'  classBody '}' ;
+
+classBody = 
+	{ methodDecl };
+
+methodDecl = 
+	[ 'public' | 'private' | 'static' ] 'function' @ident '(' [ parameterList::PL ] ')' block    ;
+	
+parameterList = 
+	parameter { ',' parameter };
+	
+parameter =
+	@phpVariable { initializer };
+	
+initializer =
+	'=' expression ;
+
+assignment::LHS =
+	@phpVariable '=' expression::EXPR	<? $LHS = new AST('asgn','', $EXPR ); ?>
+	;
+	
+expression::LHS =
+	<? $LHS = new AST('expr','' ); ?>
+	term::T <? $LHS->appendChildNode( new AST('term','' ) ) ; ?> { ( '+' | '-' | '.' ) term::T <? $LHS->appendChildNode( new AST('term','' ) ) ; ?> } 
+	;
+
+term
+	=  factor { ( '*' | '/' ) factor } ; 
+
+factor =  
+	  @ident 
+	| @number
+	| @phpVariable
+	| @stringLiterals
+	| '(' expression ')' ;

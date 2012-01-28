@@ -1,0 +1,9 @@
+<?
+
+
+class CELexerEOF extends Exception {
+	
+	
+}
+
+?>

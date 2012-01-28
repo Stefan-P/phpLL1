@@ -1,0 +1,22 @@
+@@rules
+
+rules 
+	= @rules { rule } <? echo '<p/>' . $theTree->getParentNode() . '</p>'; ?> ;
+
+rule 
+	= @ident @assign expression @opEnd ;
+
+expression 
+	=  term { @opAlternate term } ;
+
+term
+	=  factor { factor } ; 
+
+factor
+	=  @ident 
+	|  @tokenClass
+	| { @parOpen expression @parClose } 
+	| { @opManyOpen expression @opManyClose } 
+	| { @opSomeOpen expression @opSomeClose } ;
+	
+     

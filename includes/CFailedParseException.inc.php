@@ -1,0 +1,9 @@
+<?
+
+
+class CFailedParseException extends Exception {
+	
+	
+}
+
+?>

@@ -1,0 +1,23 @@
+@@rules
+
+rules 
+	= '@@rules' { rule } ;
+
+rule 
+	= @ident '=' expression ';' <? echo '<p/>' . $ast . '</p>'; ?>  ;
+
+expression 
+	=  term { '|' term } ;
+
+term
+	=  factor { factor } ; 
+
+factor
+	=  @ident <? echo '<p/>' . $ast . '</p>'; ?> 
+	|  @tokenClass
+	|  @stringLiterals
+	| { '(' expression ')' } 
+	| { '{' expression '}' } 
+	| { '[' expression ']' } ;
+	
+     
